@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plan de Vuelo OACI - Aeroclub</title>
+  <title>Plan de Vuelo OACI - Aeroclub (v2.0)</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
-      --primary: #004b87;
-      --accent: #0076d6;
-      --bg: #f4f7f9;
+      --primary: #003366;
+      --accent: #0066cc;
+      --bg: #f0f4f8;
       --card: #ffffff;
-      --text: #2c3e50;
-      --border: #dcdfe6;
+      --text: #1a252f;
+      --border: #cbd5e1;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -38,37 +38,31 @@
       margin-bottom: 20px;
     }
     .header h1 {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       margin: 0 0 5px 0;
       color: var(--primary);
     }
     .utc-clock {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: bold;
-      color: #e67e22;
-      background: #fef5e7;
-      padding: 4px 10px;
+      color: #d35400;
+      background: #fdebd0;
+      padding: 4px 12px;
       border-radius: 20px;
       display: inline-block;
     }
-    .step {
-      display: none;
-    }
-    .step.active {
-      display: block;
-    }
+    .step { display: none; }
+    .step.active { display: block; }
     .step-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: bold;
       color: var(--primary);
       margin-bottom: 15px;
     }
-    .form-group {
-      margin-bottom: 15px;
-    }
+    .form-group { margin-bottom: 15px; }
     label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: bold;
       margin-bottom: 5px;
     }
@@ -81,10 +75,7 @@
       font-size: 0.95rem;
       text-transform: uppercase;
     }
-    textarea {
-      resize: vertical;
-      min-height: 70px;
-    }
+    textarea { resize: vertical; min-height: 75px; }
     .nav-buttons {
       display: flex;
       justify-content: space-between;
@@ -101,32 +92,32 @@
       font-size: 0.9rem;
     }
     .btn-next { background: var(--accent); color: #fff; }
-    .btn-prev { background: #e0e0e0; color: #333; }
-    .btn-pdf { background: #27ae60; color: #fff; width: 100%; font-size: 1rem; padding: 12px; }
+    .btn-prev { background: #e2e8f0; color: #334155; }
+    .btn-pdf { background: #16a34a; color: #fff; width: 100%; font-size: 1rem; padding: 12px; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <h1>✈️ Plan de Vuelo OACI Oficial</h1>
-    <div class="utc-clock">HORA UTC: <span id="utcTime">--:--:--</span></div>
+    <h1>✈️ Plan de Vuelo OACI Doc 4444</h1>
+    <div class="utc-clock">RELOJ OPERATIVO: <span id="utcTime">--:--:--</span> UTC</div>
   </div>
 
   <form id="fplForm">
-    <!-- PASO 1: Matrícula y Datos Fijos -->
+    <!-- PASO 1 -->
     <div class="step active" id="step1">
-      <div class="step-title">Paso 1 de 5: Aeronave y Matrícula</div>
+      <div class="step-title">Paso 1 de 5: Datos de la Aeronave (Casilleros 7 y 9)</div>
       <div class="form-group">
-        <label>7. Identificación de la Aeronave (Callsign):</label>
-        <input type="text" id="callsign" placeholder="LV-ABC" required>
+        <label>Casillero 7: Identificación de la Aeronave (Callsign / Matrícula):</label>
+        <input type="text" id="callsign" placeholder="LV-ABC" maxlength="7" required>
       </div>
       <div class="form-group">
-        <label>9. Tipo de Aeronave (OACI):</label>
-        <input type="text" id="acType" placeholder="C172" required>
+        <label>Casillero 9: Tipo de Aeronave (Diseño OACI):</label>
+        <input type="text" id="acType" placeholder="C172" maxlength="4" required>
       </div>
       <div class="form-group">
-        <label>9. Categoría de Estela Turbulenta:</label>
+        <label>Casillero 9: Estela Turbulenta:</label>
         <select id="wake">
           <option value="L">L - Ligera (<= 7,000 kg)</option>
           <option value="M">M - Media (> 7,000 kg)</option>
@@ -135,89 +126,89 @@
       </div>
     </div>
 
-    <!-- PASO 2: Reglas y Equipamiento -->
+    <!-- PASO 2 -->
     <div class="step" id="step2">
       <div class="step-title">Paso 2 de 5: Reglas y Equipamiento (Casilleros 8 y 10)</div>
       <div class="form-group">
-        <label>8. Reglas de Vuelo:</label>
+        <label>Casillero 8: Reglas de Vuelo:</label>
         <select id="rules">
-          <option value="V">V - VFR</option>
-          <option value="I">I - IFR</option>
-          <option value="Y">Y - IFR primero</option>
-          <option value="Z">Z - VFR primero</option>
+          <option value="V">V (VFR)</option>
+          <option value="I">I (IFR)</option>
+          <option value="Y">Y (IFR primero)</option>
+          <option value="Z">Z (VFR primero)</option>
         </select>
       </div>
       <div class="form-group">
-        <label>8. Tipo de Vuelo:</label>
+        <label>Casillero 8: Tipo de Vuelo:</label>
         <select id="flightType">
-          <option value="G">G - Aviación General</option>
-          <option value="S">S - Servicio Regular</option>
-          <option value="N">N - No Regular</option>
-          <option value="M">M - Militar</option>
-          <option value="X">X - Otros</option>
+          <option value="G">G (Aviación General)</option>
+          <option value="S">S (Servicio Regular)</option>
+          <option value="N">N (No Regular)</option>
+          <option value="M">M (Militar)</option>
+          <option value="X">X (Otros)</option>
         </select>
       </div>
       <div class="form-group">
-        <label>10a. Equipo COM/NAV/Aproximación:</label>
+        <label>Casillero 10a: Equipo COM/NAV/Aproximación:</label>
         <input type="text" id="eqA" value="S/C">
       </div>
       <div class="form-group">
-        <label>10b. Equipo de Vigilancia (Transponder):</label>
+        <label>Casillero 10b: Equipo de Vigilancia (Transponder):</label>
         <input type="text" id="eqB" value="C">
       </div>
     </div>
 
-    <!-- PASO 3: Salida y Ruta -->
+    <!-- PASO 3 -->
     <div class="step" id="step3">
       <div class="step-title">Paso 3 de 5: Salida y Ruta (Casilleros 13 y 15)</div>
       <div class="form-group">
-        <label>13. Aeródromo de Salida (ICAO/OACI):</label>
-        <input type="text" id="dep" placeholder="SAVC" required>
+        <label>Casillero 13: Aeródromo de Salida (OACI / ICAO):</label>
+        <input type="text" id="dep" placeholder="SAVC" maxlength="4" required>
       </div>
       <div class="form-group">
-        <label>13. Hora prevista de fuera calzos (EOBT UTC - HHMM):</label>
+        <label>Casillero 13: Hora EOBT (UTC - HHMM):</label>
         <input type="text" id="depTime" placeholder="1400" maxlength="4" required>
       </div>
       <div class="form-group">
-        <label>15. Velocidad de Crucero (ej. N0110):</label>
-        <input type="text" id="speed" value="N0110">
+        <label>Casillero 15: Velocidad de Crucero (ej. N0110 / K0150):</label>
+        <input type="text" id="speed" value="N0110" maxlength="5">
       </div>
       <div class="form-group">
-        <label>15. Nivel de Crucero (ej. A045, F090, VFR):</label>
-        <input type="text" id="level" value="VFR">
+        <label>Casillero 15: Nivel de Crucero (ej. A045 / F090 / VFR):</label>
+        <input type="text" id="level" value="VFR" maxlength="5">
       </div>
       <div class="form-group">
-        <label>Enlace de SkyVector (Extracción automática):</label>
+        <label>Pegar Link de SkyVector (Opcional):</label>
         <input type="text" id="skyvector" placeholder="https://skyvector.com/?fpl=..." oninput="parseSkyVector()">
       </div>
       <div class="form-group">
-        <label>15. Ruta completada:</label>
+        <label>Casillero 15: Ruta:</label>
         <textarea id="route">DCT</textarea>
       </div>
     </div>
 
-    <!-- PASO 4: Destino y Casillero 18 -->
+    <!-- PASO 4 -->
     <div class="step" id="step4">
-      <div class="step-title">Paso 4 de 5: Destino y Otros Datos (Casilleros 16 y 18)</div>
+      <div class="step-title">Paso 4 de 5: Destino y Observaciones (Casilleros 16 y 18)</div>
       <div class="form-group">
-        <label>16. Aeródromo de Destino (ICAO/OACI):</label>
-        <input type="text" id="dest" placeholder="SAVT" required>
+        <label>Casillero 16: Aeródromo Destino (OACI / ICAO):</label>
+        <input type="text" id="dest" placeholder="SAVT" maxlength="4" required>
       </div>
       <div class="form-group">
-        <label>16. Duración Total Prevista (EET - HHMM):</label>
+        <label>Casillero 16: EET Duración Estimada (HHMM):</label>
         <input type="text" id="eet" placeholder="0045" maxlength="4" required>
       </div>
       <div class="form-group">
-        <label>16. Aeródromo de Alternativa:</label>
-        <input type="text" id="altn" placeholder="SACR">
+        <label>Casillero 16: Aeródromo Alternativa (OACI / ICAO):</label>
+        <input type="text" id="altn" placeholder="SACR" maxlength="4">
       </div>
       <div class="form-group">
-        <label>18. Otros Datos (DOF/, RMK/, NAV/, etc.):</label>
+        <label>Casillero 18: Otros Datos (P. ej. DOF/ RMK/ NAV/):</label>
         <input type="text" id="other" value="RMK/AEROCLUB">
       </div>
     </div>
 
-    <!-- PASO 5: Información Suplementaria -->
+    <!-- PASO 5 -->
     <div class="step" id="step5">
       <div class="step-title">Paso 5 de 5: Información Suplementaria (Casillero 19)</div>
       <div class="form-group">
@@ -233,10 +224,10 @@
         <input type="text" id="color" placeholder="BLANCO CON FRANJAS AZULES">
       </div>
       <div class="form-group">
-        <label>C/ Nombre del Piloto al Mando:</label>
+        <label>C/ Piloto al Mando (Nombre / Licencia):</label>
         <input type="text" id="pic" placeholder="PILOTO AL MANDO">
       </div>
-      <button type="button" class="btn-pdf" onclick="generateOfficialPDF()">📄 DESCARGAR FORMULARIO OFICIAL OACI (PDF)</button>
+      <button type="button" class="btn-pdf" onclick="generateOfficialICAOTemplate()">📄 GENERAR FORMULARIO OFICIAL OACI DOC 4444 (PDF)</button>
     </div>
 
     <div class="nav-buttons">
@@ -254,7 +245,7 @@
     const h = String(now.getUTCHours()).padStart(2, '0');
     const m = String(now.getUTCMinutes()).padStart(2, '0');
     const s = String(now.getUTCSeconds()).padStart(2, '0');
-    document.getElementById('utcTime').textContent = `${h}:${m}:${s} UTC`;
+    document.getElementById('utcTime').textContent = `${h}:${m}:${s}`;
   }
   setInterval(updateClock, 1000);
   updateClock();
@@ -279,93 +270,141 @@
     }
   }
 
-  // Generador con Formato de Casilleros Oficiales OACI
-  function generateOfficialPDF() {
+  // DIBUJO VECTORIAL DEL FORMULARIO OFICIAL OACI DOC 4444
+  function generateOfficialICAOTemplate() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
 
     doc.setLineWidth(0.3);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
 
-    // ENCABEZADO
-    doc.text("MODELO DE FORMULARIO DE PLAN DE VUELO OACI", 105, 12, { align: "center" });
+    // ENCABEZADO DOC 4444
+    doc.setFontSize(10);
+    doc.text("FORMULARIO DE PLAN DE VUELO OACI / ICAO FLIGHT PLAN", 105, 12, { align: "center" });
 
-    // CASILLERO 3: DESTINATARIOS
-    doc.rect(10, 16, 190, 10);
-    doc.setFontSize(7);
-    doc.text("3. DESTINATARIOS", 12, 19);
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.text("FF / ARO / AIS / TWR", 12, 24);
+    // SECCIÓN 1: DIRECCIONAMIENTO (PRIORIDAD / DESTINATARIOS)
+    doc.rect(10, 16, 190, 12);
+    doc.line(30, 16, 30, 28);
+    doc.line(100, 16, 100, 28);
+    
+    doc.setFontSize(6);
+    doc.text("PRIORIDAD", 11, 19);
+    doc.text("DESTINATARIO(S)", 31, 19);
+    doc.text("HORA DE PRESENTACIÓN", 101, 19);
+    doc.text("REMITENTE", 145, 19);
+    doc.line(144, 16, 144, 28);
 
-    // FILA 1: CAMPOS 7, 8, 9, 10
-    doc.rect(10, 28, 45, 14);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("7. IDENTIFICACIÓN AERONAVE", 12, 31);
+    doc.setFontSize(9); doc.setFont("helvetica", "normal");
+    doc.text("FF", 18, 24);
+    doc.text("ARO / AIS / TWR / ACC", 32, 24);
+
+    // SECCIÓN 2: DATOS PRINCIPALES DEL PLAN DE VUELO
+    doc.rect(10, 30, 190, 115);
+
+    // CASILLERO 7
+    doc.line(10, 42, 200, 42);
+    doc.line(65, 30, 65, 42);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("7. IDENTIFICACIÓN DE LA AERONAVE", 12, 33);
     doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-    doc.text(document.getElementById('callsign').value.toUpperCase(), 12, 38);
+    doc.text(document.getElementById('callsign').value.toUpperCase(), 15, 39);
 
-    doc.rect(55, 28, 30, 14);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("8. REGLAS / TIPO", 57, 31);
+    // CASILLERO 8
+    doc.line(105, 30, 105, 42);
+    doc.line(130, 30, 130, 42);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("8. REGLAS DE VUELO", 67, 33);
+    doc.text("TIPO DE VUELO", 107, 33);
     doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-    doc.text(`${document.getElementById('rules').value} / ${document.getElementById('flightType').value}`, 57, 38);
+    doc.text(document.getElementById('rules').value.toUpperCase(), 80, 39);
+    doc.text(document.getElementById('flightType').value.toUpperCase(), 115, 39);
 
-    doc.rect(85, 28, 55, 14);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("9. TIPO AERONAVE / ESTELA", 87, 31);
+    // CASILLERO 9
+    doc.line(10, 56, 200, 56);
+    doc.line(55, 42, 55, 56);
+    doc.line(115, 42, 115, 56);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("9. NÚMERO", 12, 45);
+    doc.text("TIPO DE AERONAVE", 57, 45);
+    doc.text("ESTELA TURBULENTA", 117, 45);
     doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-    doc.text(`${document.getElementById('acType').value.toUpperCase()} / ${document.getElementById('wake').value}`, 87, 38);
+    doc.text("1", 25, 52);
+    doc.text(document.getElementById('acType').value.toUpperCase(), 70, 52);
+    doc.text(document.getElementById('wake').value.toUpperCase(), 140, 52);
 
-    doc.rect(140, 28, 60, 14);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("10. EQUIPO (a/b)", 142, 31);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-    doc.text(`${document.getElementById('eqA').value.toUpperCase()} / ${document.getElementById('eqB').value.toUpperCase()}`, 142, 38);
-
-    // FILA 2: CAMPO 13
-    doc.rect(10, 44, 190, 12);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("13. AERÓDROMO DE SALIDA Y HORA (EOBT)", 12, 47);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-    doc.text(`${document.getElementById('dep').value.toUpperCase()}  -  EOBT: ${document.getElementById('depTime').value} UTC`, 12, 53);
-
-    // FILA 3: CAMPO 15 (Ruta)
-    doc.rect(10, 58, 190, 25);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("15. VELOCIDAD, NIVEL Y RUTA", 12, 61);
+    // CASILLERO 10
+    doc.line(10, 70, 200, 70);
+    doc.line(110, 56, 110, 70);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("10. EQUIPO COM/NAV/APROXIMACIÓN", 12, 59);
+    doc.text("EQUIPO DE VIGILANCIA (EQUIPO SSR)", 112, 59);
     doc.setFont("helvetica", "normal"); doc.setFontSize(9);
-    doc.text(`VELOCIDAD: ${document.getElementById('speed').value.toUpperCase()}    NIVEL: ${document.getElementById('level').value.toUpperCase()}`, 12, 67);
-    doc.setFontSize(8);
-    const splitRoute = doc.splitTextToSize(`RUTA: ${document.getElementById('route').value.toUpperCase()}`, 180);
-    doc.text(splitRoute, 12, 73);
+    doc.text(document.getElementById('eqA').value.toUpperCase(), 15, 66);
+    doc.text(document.getElementById('eqB').value.toUpperCase(), 115, 66);
 
-    // FILA 4: CAMPO 16 (Destino)
-    doc.rect(10, 85, 190, 14);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("16. AERÓDROMO DESTINO, EET Y ALTERNATIVAS", 12, 88);
+    // CASILLERO 13
+    doc.line(10, 84, 200, 84);
+    doc.line(85, 70, 85, 84);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("13. AERÓDROMO DE SALIDA", 12, 73);
+    doc.text("HORA (EOBT UTC)", 87, 73);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+    doc.text(document.getElementById('dep').value.toUpperCase(), 25, 80);
+    doc.text(document.getElementById('depTime').value, 110, 80);
+
+    // CASILLERO 15 (RUTA)
+    doc.line(10, 108, 200, 108);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("15. VELOCIDAD DE CRUCERO", 12, 87);
+    doc.text("NIVEL DE CRUCERO", 60, 87);
+    doc.text("RUTA", 110, 87);
     doc.setFont("helvetica", "normal"); doc.setFontSize(9);
-    doc.text(`DESTINO: ${document.getElementById('dest').value.toUpperCase()}   EET: ${document.getElementById('eet').value}   ALTN: ${document.getElementById('altn').value.toUpperCase()}`, 12, 95);
+    doc.text(document.getElementById('speed').value.toUpperCase(), 15, 93);
+    doc.text(document.getElementById('level').value.toUpperCase(), 62, 93);
+    const splitRoute = doc.splitTextToSize(document.getElementById('route').value.toUpperCase(), 85);
+    doc.text(splitRoute, 110, 93);
 
-    // FILA 5: CAMPO 18 (Otros datos)
-    doc.rect(10, 101, 190, 20);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
-    doc.text("18. OTROS DATOS", 12, 104);
+    // CASILLERO 16
+    doc.line(10, 122, 200, 122);
+    doc.line(75, 108, 75, 122);
+    doc.line(115, 108, 115, 122);
+    doc.line(155, 108, 155, 122);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("16. AERÓDROMO DE DESTINO", 12, 111);
+    doc.text("TOTAL EET", 77, 111);
+    doc.text("ALTN AERÓDROMO", 117, 111);
+    doc.text("2° ALTN AERÓDROMO", 157, 111);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+    doc.text(document.getElementById('dest').value.toUpperCase(), 20, 118);
+    doc.text(document.getElementById('eet').value, 82, 118);
+    doc.text(document.getElementById('altn').value.toUpperCase(), 122, 118);
+
+    // CASILLERO 18
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    doc.text("18. OTROS DATOS", 12, 125);
     doc.setFont("helvetica", "normal"); doc.setFontSize(8);
     const splitOther = doc.splitTextToSize(document.getElementById('other').value.toUpperCase(), 180);
-    doc.text(splitOther, 12, 110);
+    doc.text(splitOther, 12, 131);
 
-    // FILA 6: CAMPO 19 (Información Suplementaria)
-    doc.rect(10, 123, 190, 35);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8);
-    doc.text("19. INFORMACIÓN SUPLEMENTARIA", 12, 127);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(8);
-    doc.text(`E/ AUTONOMÍA: ${document.getElementById('endurance').value}    P/ POB: ${document.getElementById('pob').value}`, 12, 134);
-    doc.text(`A/ COLOR Y MARCAS: ${document.getElementById('color').value.toUpperCase()}`, 12, 141);
-    doc.text(`C/ PILOTO AL MANDO: ${document.getElementById('pic').value.toUpperCase()}`, 12, 148);
+    // CASILLERO 19: INFORMACIÓN SUPLEMENTARIA
+    doc.rect(10, 148, 190, 45);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(7);
+    doc.text("19. INFORMACIÓN SUPLEMENTARIA (SUPPLEMENTARY INFORMATION)", 12, 152);
 
-    const filename = `FPL_OACI_${document.getElementById('callsign').value.toUpperCase()}_${document.getElementById('dep').value.toUpperCase()}.pdf`;
+    doc.setFontSize(8);
+    doc.text("E/", 12, 159); doc.setFont("helvetica", "normal"); doc.text(`AUTONOMÍA: ${document.getElementById('endurance').value}`, 20, 159);
+    doc.setFont("helvetica", "bold"); doc.text("P/", 85, 159); doc.setFont("helvetica", "normal"); doc.text(`PERSONAS A BORDO: ${document.getElementById('pob').value}`, 92, 159);
+
+    doc.setFont("helvetica", "bold"); doc.text("R/", 12, 166); doc.setFont("helvetica", "normal"); doc.text("RADIO EQUIPO SURVIVAL: (UHF / VHF)", 20, 166);
+    doc.setFont("helvetica", "bold"); doc.text("S/", 85, 166); doc.setFont("helvetica", "normal"); doc.text("EQUIPO SUPERVIVENCIA: (POLAR / DESERT)", 92, 166);
+
+    doc.setFont("helvetica", "bold"); doc.text("J/", 12, 173); doc.setFont("helvetica", "normal"); doc.text("CHALECOS: (LIGHT / FLUORES / UHF / VHF)", 20, 173);
+    doc.setFont("helvetica", "bold"); doc.text("D/", 85, 173); doc.setFont("helvetica", "normal"); doc.text("BOTES NEUMÁTICOS: (NIL)", 92, 173);
+
+    doc.setFont("helvetica", "bold"); doc.text("A/", 12, 180); doc.setFont("helvetica", "normal"); doc.text(`COLOR Y MARCAS: ${document.getElementById('color').value.toUpperCase()}`, 20, 180);
+    doc.setFont("helvetica", "bold"); doc.text("C/", 12, 187); doc.setFont("helvetica", "normal"); doc.text(`PILOTO AL MANDO: ${document.getElementById('pic').value.toUpperCase()}`, 20, 187);
+
+    const filename = `FPL_OACI_DOC4444_${document.getElementById('callsign').value.toUpperCase()}.pdf`;
     doc.save(filename);
   }
 </script>
