@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan de Vuelo OACI - Aeroclub</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #004b87;
+      --accent: #0076d6;
+      --bg: #f4f7f9;
+      --card: #ffffff;
+      --text: #2c3e50;
+      --border: #dcdfe6;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .header {
+      text-align: center;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 1.4rem;
+      margin: 0 0 5px 0;
+      color: var(--primary);
+    }
+    .utc-clock {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #e67e22;
+      background: #fef5e7;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+    }
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-next { background: var(--accent); color: #fff; }
+    .btn-prev { background: #e0e0e0; color: #333; }
+    .btn-pdf { background: #27ae60; color: #fff; width: 100%; font-size: 1rem; padding: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>✈️ Plan de Vuelo OACI</h1>
+    <div class="utc-clock">HORA UTC: <span id="utcTime">--:--:--</span></div>
+  </div>
+
+  <form id="fplForm">
+    <!-- PASO 1: Matrícula -->
+    <div class="step active" id="step1">
+      <div class="step-title">Paso 1 de 5: Aeronave y Matrícula</div>
+      <div class="form-group">
+        <label>Seleccionar Matrícula Guardada:</label>
+        <select id="savedFleet" onchange="loadAircraftData()">
+          <option value="">-- NUEVA / OTRA --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Matrícula (Campo 7):</label>
+        <input type="text" id="callsign" placeholder="LV-ABC" required>
+      </div>
+      <div class="form-group">
+        <label>Tipo de Aeronave (Campo 9):</label>
+        <input type="text" id="acType" placeholder="C172" required>
+      </div>
+      <div class="form-group">
+        <label>Estela Turbulenta:</label>
+        <select id="wake">
+          <option value="L">L (LIGERA)</option>
+          <option value="M">M (MEDIA)</option>
+          <option value="H">H (PESADA)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PASO 2: Equipo y Vuelo -->
+    <div class="step" id="step2">
+      <div class="step-title">Paso 2 de 5: Equipamiento y Reglas</div>
+      <div class="form-group">
+        <label>Reglas de Vuelo (Campo 8):</label>
+        <select id="rules">
+          <option value="V">V - VFR</option>
+          <option value="I">I - IFR</option>
+          <option value="Y">Y - IFR A VFR</option>
+          <option value="Z">Z - VFR A IFR</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tipo de Vuelo:</label>
+        <select id="flightType">
+          <option value="G">G - Aviación General</option>
+          <option value="S">S - Regular</option>
+          <option value="N">N - No Regular</option>
+          <option value="M">M - Militar</option>
+          <option value="X">X - Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Equipo COM/NAV (Campo 10a):</label>
+        <input type="text" id="eqA" value="S/C">
+      </div>
+      <div class="form-group">
+        <label>Equipo Transponder (Campo 10b):</label>
+        <input type="text" id="eqB" value="C">
+      </div>
+    </div>
+
+    <!-- PASO 3: Salida, Destino y Ruta -->
+    <div class="step" id="step3">
+      <div class="step-title">Paso 3 de 5: Ruta y Aeródromos</div>
+      <div class="form-group">
+        <label>Aeródromo Salida (Campo 13):</label>
+        <input type="text" id="dep" placeholder="SAVC" required>
+      </div>
+      <div class="form-group">
+        <label>EOBT Hora Salida UTC (HHMM):</label>
+        <input type="text" id="depTime" placeholder="1400" maxlength="4" required>
+      </div>
+      <div class="form-group">
+        <label>Velocidad de Crucero (ej. N0110):</label>
+        <input type="text" id="speed" value="N0110">
+      </div>
+      <div class="form-group">
+        <label>Nivel de Crucero (ej. A045, VFR):</label>
+        <input type="text" id="level" value="VFR">
+      </div>
+      <div class="form-group">
+        <label>Pegar Link SkyVector (Opcional):</label>
+        <input type="text" id="skyvector" placeholder="https://skyvector.com/?fpl=..." oninput="parseSkyVector()">
+      </div>
+      <div class="form-group">
+        <label>Ruta de Vuelo (Campo 15):</label>
+        <textarea id="route">DCT</textarea>
+      </div>
+    </div>
+
+    <!-- PASO 4: Destino y Alternativas -->
+    <div class="step" id="step4">
+      <div class="step-title">Paso 4 de 5: Destino y Tiempos</div>
+      <div class="form-group">
+        <label>Aeródromo Destino (Campo 16):</label>
+        <input type="text" id="dest" placeholder="SAVT" required>
+      </div>
+      <div class="form-group">
+        <label>EET Tiempo Total Estimado (HHMM):</label>
+        <input type="text" id="eet" placeholder="0045" maxlength="4" required>
+      </div>
+      <div class="form-group">
+        <label>Aeródromo Alternativa:</label>
+        <input type="text" id="altn" placeholder="SACR">
+      </div>
+      <div class="form-group">
+        <label>Otros Datos (Campo 18):</label>
+        <input type="text" id="other" value="RMK/AEROCLUB">
+      </div>
+    </div>
+
+    <!-- PASO 5: Suplementarios (Campo 19) -->
+    <div class="step" id="step5">
+      <div class="step-title">Paso 5 de 5: Datos Suplementarios (Campo 19)</div>
+      <div class="form-group">
+        <label>Autonomía (HHMM):</label>
+        <input type="text" id="endurance" placeholder="0430" maxlength="4" required>
+      </div>
+      <div class="form-group">
+        <label>Personas a Bordo (POB):</label>
+        <input type="number" id="pob" value="2" min="1">
+      </div>
+      <div class="form-group">
+        <label>Color y Marcas de la Aeronave:</label>
+        <input type="text" id="color" placeholder="BLANCO CON FRANJAS AZULES">
+      </div>
+      <button type="button" class="btn-pdf" onclick="generatePDF()">📄 DESCARGAR PDF DE PLAN DE VUELO</button>
+    </div>
+
+    <div class="nav-buttons">
+      <button type="button" class="btn-prev" id="prevBtn" onclick="changeStep(-1)" style="display:none;">Anterior</button>
+      <button type="button" class="btn-next" id="nextBtn" onclick="changeStep(1)">Siguiente</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  let currentStep = 1;
+
+  // Actualizar Reloj UTC
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getUTCHours()).padStart(2, '0');
+    const m = String(now.getUTCMinutes()).padStart(2, '0');
+    const s = String(now.getUTCSeconds()).padStart(2, '0');
+    document.getElementById('utcTime').textContent = `${h}:${m}:${s} UTC`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Control de Pasos
+  function changeStep(dir) {
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    currentStep += dir;
+    document.getElementById(`step${currentStep}`).classList.add('active');
+
+    document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'block';
+    document.getElementById('nextBtn').style.display = currentStep === 5 ? 'none' : 'block';
+  }
+
+  // Parser de SkyVector
+  function parseSkyVector() {
+    const url = document.getElementById('skyvector').value;
+    if (url.includes('fpl=')) {
+      const match = url.match(/fpl=([^&]+)/);
+      if (match && match[1]) {
+        const routeClean = decodeURIComponent(match[1]).replace(/\+/g, ' ');
+        document.getElementById('route').value = routeClean.toUpperCase();
+      }
+    }
+  }
+
+  // Generador de PDF usando jsPDF
+  function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("PLAN DE VUELO OACI", 105, 18, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    const fields = [
+      ["7. MATRÍCULA:", document.getElementById('callsign').value],
+      ["8. REGLAS / TIPO:", `${document.getElementById('rules').value} / ${document.getElementById('flightType').value}`],
+      ["9. TIPO / ESTELA:", `${document.getElementById('acType').value} / ${document.getElementById('wake').value}`],
+      ["10. EQUIPAMIENTO:", `${document.getElementById('eqA').value} / ${document.getElementById('eqB').value}`],
+      ["13. SALIDA / HORA:", `${document.getElementById('dep').value} - ${document.getElementById('depTime').value} UTC`],
+      ["15. VELOCIDAD / NIVEL:", `${document.getElementById('speed').value} / ${document.getElementById('level').value}`],
+      ["15. RUTA:", document.getElementById('route').value],
+      ["16. DESTINO / EET / ALTN:", `${document.getElementById('dest').value} / ${document.getElementById('eet').value} / ${document.getElementById('altn').value}`],
+      ["18. OTROS DATOS:", document.getElementById('other').value],
+      ["19. AUTONOMÍA / POB / COLOR:", `${document.getElementById('endurance').value} / POB: ${document.getElementById('pob').value} / ${document.getElementById('color').value}`]
+    ];
+
+    let y = 30;
+    fields.forEach(([label, val]) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(label, 15, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(String(val).toUpperCase(), 75, y);
+      doc.line(15, y + 2, 195, y + 2);
+      y += 12;
+    });
+
+    const filename = `FPL_${document.getElementById('callsign').value}_${document.getElementById('dep').value}.pdf`;
+    doc.save(filename);
+  }
+</script>
+</body>
+</html>
